@@ -1,0 +1,78 @@
+1. [2 балла] Создайте папку в корневой HDFS-папке
+hdfs dfs -mkdir /my_dir
+
+2. [2 балла] Создайте в созданной папке новую вложенную папку.
+hdfs dfs -mkdir /my_dir/inner
+
+3. [3 балла] Что такое Trash в  распределенной FS? Как сделать так, чтобы файлы удалялись сразу, минуя  “Trash”?
+Временное хранилище удаленных файлов. По умолчанию, файлы там лежат 24 часа. Для немедленного удаления можно использовать команду с ключом -skipTrash
+
+4. [2 балла] Создайте пустой файл в подпапке из пункта 2.
+hdfs dfs -touchz /my_dir/inner/empty
+
+5. [2 балла] Удалите  созданный файл.
+hdfs dfs -rm /my_dir/inner/empty
+
+6. [2 балла] Удалите  созданные папки.
+hdfs dfs -rm -r /my_dir
+
+См. флаги “-put”, “-cat”, “-tail”, “-cp”
+1. [3 балла] Скопируйте любой в новую папку на HDFS
+hdfs dfs -mkdir /my_dir
+hdfs dfs -put /etc/hadoop/configuration.xsl /my_dir
+
+2. [3 балла] Выведите содержимое  HDFS-файла на экран.
+hdfs dfs -cat /my_dir/configuration.xsl
+
+3. [3 балла] Выведите  содержимое нескольких последних строчек HDFS-файла на экран.
+hdfs dfs -tail /my_dir/configuration.xsl
+
+4. [3 балла] Выведите  содержимое нескольких первых строчек HDFS-файла на экран.
+hdfs dfs -head /my_dir/configuration.xsl
+
+5. [3 балла] Переместите копию  файла в HDFS на новую локацию.
+hdfs dfs -cp /my_dir/configuration.xsl /
+
+2. [4  баллов]  Изменить    replication  factor  для  файла.  Как  долго  занимает  время  на  увеличение  /  
+уменьшение числа реплик для файла?
+time hdfs dfs -setrep 2 /configuration.xsl
+Replication 2 set: /configuration.xsl
+
+real    0m1.923s
+user    0m3.144s
+sys     0m0.158s
+
+time hdfs dfs -setrep 3 /configuration.xsl
+Replication 3 set: /configuration.xsl
+
+real    0m1.571s
+user    0m2.477s
+sys     0m0.137s
+
+3. [4 баллов] Найдите  информацию по файлу, блокам и их расположениям с помощью “hdfs fsck”
+hdfs fsck / -files -blocks                 
+Connecting to namenode via http://namenode:9870/fsck?ugi=root&files=1&blocks=1&path=%2F
+FSCK started by root (auth:SIMPLE) from /172.21.0.8 for path / at Sun Oct 03 08:22:56 UTC 2021
+/ <dir>
+/configuration.xsl 1335 bytes, replicated: replication=3, 1 block(s):  OK
+0. BP-904431779-172.21.0.8-1633247239946:blk_1073741831_1007 len=1335 Live_repl=3
+
+
+4. [4  баллов]  Получите    информацию  по  любому  блоку  из  п.2  с  помощью  "hdfs  fsck  -blockId”.  
+Обратите внимание на Generation Stamp (GS number)
+hdfs fsck -blockId blk_1073741831     
+Connecting to namenode via http://namenode:9870/fsck?ugi=root&blockId=blk_1073741831+&path=%2F
+FSCK started by root (auth:SIMPLE) from /172.21.0.8 at Sun Oct 03 08:30:10 UTC 2021
+
+Block Id: blk_1073741831
+Block belongs to: /configuration.xsl
+No. of Expected Replica: 3
+No. of live Replica: 3
+No. of excess Replica: 0
+No. of stale Replica: 0
+No. of decommissioned Replica: 0
+No. of decommissioning Replica: 0
+No. of corrupted Replica: 0
+Block replica on datanode/rack: 127dcfce0634/default-rack is HEALTHY
+Block replica on datanode/rack: 511559ec6479/default-rack is HEALTHY
+Block replica on datanode/rack: d7fd5f3bf5dc/default-rack is HEALTHY
